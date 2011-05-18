@@ -1,0 +1,79 @@
+jolabeledslider {
+	display:-webkit-box;
+}
+
+jolabeledslider jolabel {
+	width:25px;
+	-webkit-box-flex:0;
+}
+
+jocard.battle joflexrow.leader {
+	background:-webkit-gradient(linear, left top, left bottom, from(#11bb11), to(#007700));
+}
+
+jocard.main jolistitem {
+	padding:3px;
+}
+
+jocard.main joslider {
+	height:20px;
+	top:10px;
+}
+
+jocard.main joslider josliderthumb {
+	padding:0px;
+	height:22px;
+	top:-2px;
+	-webkit-border-radius:10px;
+}
+
+jocard.main jocaption.player-level {
+	-webkit-box-flex:0;
+	text-align:center;
+	line-height:40px;
+	width:30px;
+	background:url(../images/level.png) no-repeat center center;
+	-webkit-background-size:100% auto;
+}
+
+jocard.main jolistitem jocontainer.player-details  {
+	height:0px;
+	overflow:hidden;
+	-webkit-transition: all 200ms linear;
+}
+
+jocard.main jolistitem jocontainer.player-details.show {
+	height:110px;
+	overflow:hidden;
+}
+
+jocard.main jocontainer.player-details jolabel {
+	width:80px;
+	-webkit-box-flex:0;
+}
+
+jocard.main jocontainer.player-details jobutton {
+	width:10px;
+	-webkit-box-flex:0;
+}
+
+jocaption.strength-label {
+	-webkit-box-flex:0;
+	line-height:40px;
+	width:30px;
+	text-align:center;
+	background:url(../images/strength.png) no-repeat center center;
+	-webkit-background-size:100% auto;
+}
+
+jocaption.player-name {
+	-webkit-box-flex:0;
+	line-height:40px;
+	width:60px;
+	background:url(../images/player.png) no-repeat center left;
+	-webkit-background-size:auto 85%;
+}
+
+joslider.animate josliderthumb {
+	-webkit-transition: all 100ms linear;
+}

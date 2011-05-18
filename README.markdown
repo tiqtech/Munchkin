@@ -1,0 +1,1 @@
+Scorekeeping app for Steven Jackson's Munchkin
