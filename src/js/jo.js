@@ -2807,7 +2807,7 @@ joControl = function(data, value) {
 		if (value instanceof joDataSource)
 			this.setValueSource(value);
 		else
-			this.value = value;
+			this.setValue(value);
 	}
 
 	if (!!data) {
