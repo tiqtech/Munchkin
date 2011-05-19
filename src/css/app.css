@@ -1,3 +1,7 @@
+.selected {
+	background-color: #ffffff;
+}
+
 jolabeledslider {
 	display:-webkit-box;
 }
@@ -48,12 +52,19 @@ jocard.main jolistitem jocontainer.player-details.show {
 }
 
 jocard.main jocontainer.player-details jolabel {
+	line-height:48px;
 	width:80px;
 	-webkit-box-flex:0;
 }
 
+jocard.main jocontainer.player-details input {
+	width:50px;
+	-webkit-box-flex:0;
+	text-align:center;
+}
+
 jocard.main jocontainer.player-details jobutton {
-	width:10px;
+	width:20px;
 	-webkit-box-flex:0;
 }
 

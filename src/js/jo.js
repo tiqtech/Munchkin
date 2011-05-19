@@ -750,6 +750,8 @@ joEvent = {
 	},
 		
 	stop: function(e) {
+		e = e || window.event;
+		
 		if (e.stopPropagation)
 			e.stopPropagation();
 		else
@@ -861,6 +863,10 @@ joSubject = function(subject) {
 };
 joSubject.prototype = {
 	last: -1,
+	
+	hasSubscribers: function() {
+		return this.subscriptions.length > 0;
+	},
 	
 	subscribe: function(call, observer, data) {
 		if (!call)
@@ -1025,6 +1031,10 @@ function joDefer(call, context, delay, data) {
 	}, delay);
 	
 	return timer;
+}
+
+joDefer.cancel = function(timer) {
+	window.clearTimeout(timer);
 }
 
 joYield = joDefer;/**
@@ -2483,7 +2493,7 @@ joInterface.prototype = {
 */
 joView = function(data) {
 	this.changeEvent = new joSubject(this);
-
+	
 	this.container = null;
 	this.setContainer();
 
@@ -2785,7 +2795,11 @@ joContainer.extend(joView, {
 
 */
 joControl = function(data, value) {
+	joView.call(this);
+	
 	this.selectEvent = new joSubject(this);
+	this.beforeChangeEvent = new joSubject(this);
+	
 	this.enabled = true;
 	this.value = null;
 
@@ -2796,13 +2810,12 @@ joControl = function(data, value) {
 			this.value = value;
 	}
 
-	if (typeof data !== "undefined" && data instanceof joDataSource) {
-		// we want to bind directly to some data
-		joView.call(this);
-		this.setDataSource(data);
-	}
-	else {
-		joView.apply(this, arguments);
+	if (!!data) {
+		if (data instanceof joDataSource) {
+			this.setDataSource(data);
+		} else {
+			this.setData(data);
+		}
 	}
 };
 joControl.extend(joView, {
@@ -2811,7 +2824,7 @@ joControl.extend(joView, {
 	setEvents: function() {
 		// not sure what we want to do here, want to use
 		// gesture system, but that's not defined
-		joEvent.capture(this.container, "click", this.onMouseDown, this);
+		joEvent.on(this.container, "click", this.onMouseDown, this);
 		joEvent.on(this.container, "blur", this.onBlur, this);
 		joEvent.on(this.container, "focus", this.onFocus, this);
 	},
@@ -2821,7 +2834,7 @@ joControl.extend(joView, {
 	},
 	
 	select: function(e) {
-		if (e)
+		if (e && this.selectEvent.hasSubscribers())
 			joEvent.stop(e);
 
 		this.selectEvent.fire(this.data);
@@ -2862,13 +2875,11 @@ joControl.extend(joView, {
 	},
 	
 	onBlur: function(e) {
-		this.data = (this.container.value) ? this.container.value : this.container.innerHTML;
+		this.setValue((this.container.value) ? this.container.value : this.container.innerHTML);
 		joEvent.stop(e);
 
 		if (this.enabled) {
 			this.blur();
-
-			this.changeEvent.fire(this.data);
 		}
 	},
 	
@@ -2885,9 +2896,17 @@ joControl.extend(joView, {
 	},
 	
 	setValue: function(value) {
-		this.value = value;
-		this.changeEvent.fire(value);
-
+		var e = {
+			previousValue:this.value,
+			value:value
+		}
+		
+		this.beforeChangeEvent.fire(e);
+		
+		this.value = e.value;
+		this.container.value = e.value;
+		this.changeEvent.fire(e.value);
+		
 		return this;
 	},
 	
@@ -2896,6 +2915,7 @@ joControl.extend(joView, {
 	},
 	
 	blur: function() {
+		this.container.blur();
 		joDOM.removeCSSClass(this.container, 'focus');
 		
 		return this;
@@ -2914,11 +2934,11 @@ joControl.extend(joView, {
 	
 	setValueSource: function(source) {
 		this.valueSource = source;
-		source.changeEvent.subscribe(this.setValue, this);
+		source.changeEvent.subscribe(this.setData, this);
 		
 		var value = source.getData();
 		this.setValue((value !== 'undefined') ? value : null);
-		this.selectEvent.subscribe(source.setData, source);
+		this.changeEvent.subscribe(source.setData, source);
 		
 		return this;
 	}
@@ -2981,6 +3001,11 @@ joButton.extend(joControl, {
 		// this doesn't seem to work in safari doh
 		this.container.removeAttribute("tabindex");
 		return joControl.prototype.disable.call(this);
+	},
+	
+	focus: function() {
+		joControl.prototype.focus.apply(this, arguments);
+		joDefer(joFocus.clear, joFocus, 500);
 	}
 });
 /**
@@ -3066,7 +3091,7 @@ joBusy.extend(joContainer, {
 	
 	  For sorting purposes, this method is called and should be overriden
 	  to support custom data types.
-	
+
 			// general logic and approriate return values
 			if (a > b)
 				return 1;
@@ -4723,27 +4748,27 @@ joHTML.extend(joControl, {
 	  (e.g. joPreference).
 	
 */
-joInput = function(data) {
-	joControl.apply(this, arguments);
+joInput = function(value) {
+	joControl.call(this, undefined, value);
 };
 joInput.extend(joControl, {
 	tagName: "input",
 	type: "text",
 	
-	setData: function(data) {
-		if (data !== this.data) {
-			this.data = data;
+	// setData: function(data) {
+		// if (data !== this.data) {
+			// this.data = data;
 			
-			if (typeof this.container.value !== "undefined")
-				this.container.value = data;
-			else
-				this.container.innerHTML = data;
+			// if (typeof this.container.value !== "undefined")
+				// this.container.value = data;
+			// else
+				// this.container.innerHTML = data;
 
-			this.changeEvent.fire(this.data);
-		}
+			// this.changeEvent.fire(this.data);
+		// }
 		
-		return this;
-	},
+		// return this;
+	// },
 	
 	getData: function() {
 		if (typeof this.container.value !== "undefined")
@@ -4800,9 +4825,9 @@ joInput.extend(joControl, {
 	
 	draw: function() {
 		if (this.container.value)
-			this.value = this.data;
+			this.container.value = this.value;
 		else
-			this.innerHTML = this.value;
+			this.container.innerHTML = this.value;
 	},
 	
 	onMouseDown: function(e) {
@@ -4811,9 +4836,9 @@ joInput.extend(joControl, {
 	},
 	
 	storeData: function() {
-		this.data = this.getData();
-		if (this.dataSource)
-			this.dataSource.set(this.value);
+		this.value = this.getValue();
+		if (this.valueSource)
+			this.valueSource.set(this.value);
 	}
 });
 
@@ -6400,7 +6425,7 @@ joSlider.extend(joControl, {
 		if (!this.container)
 			return this;
 		
-		var t = this.container.firstChild.offsetWidth;
+		var t = this.thumb.offsetWidth;
 		var w = this.container.offsetWidth - t;
 
 		var x = Math.floor((Math.abs(this.min-this.value) / this.range) * w);
@@ -6421,8 +6446,8 @@ joSlider.extend(joControl, {
 		joEvent.stop(e);
 		joEvent.preventDefault(e);
 		
+		this.reset();
 		joDefer(function() {
-			this.reset();
 			this.slideEndEvent.fire(this.value);
 		}, this);
 	},
@@ -6436,17 +6461,17 @@ joSlider.extend(joControl, {
 	},
 
 	onClick: function(e) {
-		if (this.inMotion || this.moved)
-			return;
-		
 		joEvent.stop(e);
 		joEvent.preventDefault(e);
 		
+		// if target isn't joslider (e.g. click on thumb or after mouseup on drag), kick out
+		var t = joEvent.getTarget(e);
+		if (t !== this.container)
+			return;
+	
 		var point = this.getMouse(e);
-		var x = Math.floor(point.x);
+		var x = Math.floor(point.x - joDOM.pageOffsetLeft(this.container));
 		var t = this.thumb.offsetWidth;
-		
-		x = x - t;
 		
 		var w = this.container.offsetWidth - t;
 
@@ -6460,8 +6485,8 @@ joSlider.extend(joControl, {
 	
 	getMouse: function(e) {
 		return { 
-			x: (this.horizontal) ? e.screenX : 0,
-			y: (this.vertical) ? e.screenY : 0
+			x: (this.horizontal) ? e.pageX : 0,
+			y: (this.vertical) ? e.pageY : 0
 		};
 	},
 	
