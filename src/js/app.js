@@ -9,6 +9,9 @@ joListItem.extend(joContainer, {
 	tagName:"jolistitem"
 });
 
+joIcon = function() {joView.apply(this, arguments); }
+joIcon.extend(joView, {tagName:"joicon"});
+
 var App = (function App() {
 	var nav, screen, stack, cards, players, selectedPlayer, preferences;
 	
@@ -32,7 +35,7 @@ var App = (function App() {
 	/**** Cards ****/
 	cards = {
 		main:function() {
-			var b, list;
+			var b, list, lastExpando;
 			
 			var card = new joCard([
 				list = new joList(players),
@@ -40,28 +43,35 @@ var App = (function App() {
 			]).setTitle("Players").setClassName("main");
 						
 			list.formatItem = function(item, index) {
-				var slider, sliderLabel, level, drawer, subLevel, addLevel, levelInput;
+				var slider, subLevel, addLevel, levelInput, classSelect, drawer;
 				var li = new joListItem([
-					new joFlexrow([
-						level = new joCaption(item.link("level")).setClassName("player-level"),
-						new joCaption(item.link("name")).setClassName("player-name"),
-						slider = new joSlider().setRange(0,30).setClassName("strength-slider"),
-						sliderLabel = new joCaption(item.link("strength")).setClassName("strength-label")
-					]),
-					drawer = new joContainer([
+					drawer = new joExpando([
 						new joFlexrow([
-							new joLabel("Level"),
-							subLevel = new joButton("<"),
-							levelInput = new joInput(item.link("level")),
-							addLevel = new joButton(">"),
-							new joCaption()
-						]).setClassName("level-row"),
-						new joFlexrow([
-							new joLabel("Class"),
-							new joSelect(["Warrior", "Wizard", "Ranger"])
-						]).setClassName("class-row")
+							level = new joCaption(item.link("level")).setClassName("player-level"),
+							new joCaption(item.link("name")).setClassName("player-name"),
+							new joCaption(item.link("strength")).setClassName("strength-label"),
+							slider = new joSlider().setRange(0,30).setClassName("strength-slider"),
+							new joIcon()
+						]),
+						new joExpandoContent([
+							new joFlexrow([
+								new joLabel("Level"),
+								subLevel = new joButton("<"),
+								levelInput = new joInput(item.link("level")),
+								addLevel = new joButton(">"),
+								new joCaption()
+							]).setClassName("level-row"),
+							new joFlexrow([
+								new joLabel("Class"),
+								classSelect = new joSelect(["Warrior", "Wizard", "Ranger"])
+							]).setClassName("class-row")
+						]).setClassName("player-details-wrapper")
 					]).setClassName("player-details")
 				], index);
+				
+				// drawer.openEvent.subscribe(function() {
+					// lastExpando = drawer;
+				// });
 				
 				function modifyLevel(value, source, modifier) {
 					var v = (levelInput.getValue() || 1)+modifier;
@@ -72,6 +82,11 @@ var App = (function App() {
 				subLevel.selectEvent.subscribe(modifyLevel, this, -1);
 				addLevel.selectEvent.subscribe(modifyLevel, this, 1);
 				
+				classSelect.selectEvent.subscribe(function() {
+					console.log("selectEvent");
+					joEvent.stop();
+				});
+				
 				levelInput.beforeChangeEvent.subscribe(function(e, source) {
 					e.value = Math.max(Math.min(e.value,preferences.getProperty("maxLevel")), 1);
 				});
@@ -80,6 +95,10 @@ var App = (function App() {
 					item.setProperty("strength", Math.round(value));
 				}
 				slider.changeEvent.subscribe(updateStrength)
+				slider.slideStartEvent.subscribe(function() {
+					joEvent.stop();
+					list.setValue(index);
+				});
 				
 				joDefer(function() {
 					animate(slider);
@@ -90,22 +109,17 @@ var App = (function App() {
 			};
 			
 			list.refresh();
-			list.selectEvent.subscribe(function(index, source){
-				b.enable();
-				drawers = list.getContainer().querySelectorAll("jolist jocontainer.player-details");
-				for(var i=0;i<drawers.length;i++) {
-					if(i == index) {
-						joDOM.toggleCSSClass(drawers[i], "show")
-					} else {
-						joDOM.removeCSSClass(drawers[i], "show")
-					}
+			list.selectEvent.subscribe(function(index) {
+				if(lastExpando) {
+					lastExpando.close();
 				}
-			});
+				b.enable();
+			})
 			
 			b.disable();
 			b.selectEvent.subscribe(function() {
 				var index = list.getValue();
-				if(index) {
+				if(typeof index !== "undefined") {
 					selectedPlayer = players.getData()[index];
 					stack.push(cards.battle());
 				}
@@ -123,12 +137,12 @@ var App = (function App() {
 				]),
 				monsterRow = new joFlexrow([
 					new joCaption("Monster"),
-					monsterSlider = new joSlider().setRange(-30,30),
+					monsterSlider = new joSlider().setRange(0,30),
 					monsterLabel = new joCaption().setClassName("strength-label")
 				]),
 				modifierRow = new joFlexrow([
 					new joCaption("Modifier"),
-					modifierSlider = new joSlider().setRange(0,30),
+					modifierSlider = new joSlider().setRange(-30,30),
 					modifierLabel = new joCaption().setClassName("strength-label")
 				]),
 				done = new joButton("Done")
@@ -157,10 +171,13 @@ var App = (function App() {
 			monsterSlider.changeEvent.subscribe(updateSliderLabel, this);
 						
 			done.selectEvent.subscribe(function() {
-				var p = Math.round(playerSlider.getValue());
-				var m = Math.round(monsterSlider.getValue());
-				if(p > m) {
-					selectedPlayer.level++;
+				var modifier = Math.round(modifierSlider.getValue());
+				var monster = Math.round(monsterSlider.getValue());
+				
+				var level = selectedPlayer.getProperty("level");
+				var p = selectedPlayer.getProperty("strength") + level 
+				if(p > monster + modifier) {
+					selectedPlayer.setProperty("level", level+1);
 					players.load(players.getData());
 				}
 				
