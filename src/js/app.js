@@ -1,4 +1,5 @@
 jo.load();
+phoneGap = new PhoneGap();
 
 joListItem = function(data, value) {
 	joContainer.apply(this, arguments);
@@ -9,8 +10,12 @@ joListItem.extend(joContainer, {
 	tagName:"jolistitem"
 });
 
-joIcon = function() {joView.apply(this, arguments); }
-joIcon.extend(joView, {tagName:"joicon"});
+joIcon = function() {joControl.apply(this, arguments); }
+joIcon.extend(joControl, {tagName:"joicon"});
+
+joExpando.prototype.isOpen = function() {
+	return this.container.className.match(/[\s|^o]pe[n\s|n$]/);
+}
 
 var App = (function App() {
 	var nav, screen, stack, cards, players, selectedPlayer, preferences;
@@ -35,24 +40,26 @@ var App = (function App() {
 	/**** Cards ****/
 	cards = {
 		main:function() {
-			var b, list, lastExpando;
+			var b, list, expandEvent;
 			
+			expandEvent = new joSubject(this);
 			var card = new joCard([
 				list = new joList(players),
 				b = new joButton("Battle!")
 			]).setTitle("Players").setClassName("main");
 						
 			list.formatItem = function(item, index) {
-				var slider, subLevel, addLevel, levelInput, classSelect, drawer;
+				var slider, strengthLabel, subLevel, addLevel, levelInput, classSelect, raceSelect, drawer, icon;
 				var li = new joListItem([
+					new joFlexrow([
+						level = new joCaption(item.link("level")).setClassName("player-level"),
+						new joCaption(item.link("name")).setClassName("player-name"),
+						strengthLabel = new joCaption(item.link("strength")).setClassName("strength-label"),
+						slider = new joSlider().setRange(0,30).setClassName("strength-slider"),
+						icon = new joIcon()
+					]),
 					drawer = new joExpando([
-						new joFlexrow([
-							level = new joCaption(item.link("level")).setClassName("player-level"),
-							new joCaption(item.link("name")).setClassName("player-name"),
-							new joCaption(item.link("strength")).setClassName("strength-label"),
-							slider = new joSlider().setRange(0,30).setClassName("strength-slider"),
-							new joIcon()
-						]),
+						new joCaption().setClassName("hideme"),
 						new joExpandoContent([
 							new joFlexrow([
 								new joLabel("Level"),
@@ -64,14 +71,35 @@ var App = (function App() {
 							new joFlexrow([
 								new joLabel("Class"),
 								classSelect = new joSelect(["Warrior", "Wizard", "Ranger"])
-							]).setClassName("class-row")
+							]).setClassName("class-row"),
+							new joFlexrow([
+								new joLabel("Race"),
+								raceSelect = new joSelect(["Human", "Elf", "Dwarf"])
+							]).setClassName("race-row")
 						]).setClassName("player-details-wrapper")
 					]).setClassName("player-details")
 				], index);
+
+				icon.selectEvent.subscribe(function() {
+					joEvent.stop();
+					list.setValue(index);
+					drawer.toggle();
+					
+					if(drawer.isOpen()) {
+						joDOM.addCSSClass(icon, "open");
+						expandEvent.fire({
+							icon: icon,
+							drawer: drawer
+						});
+					}
+				});
 				
-				// drawer.openEvent.subscribe(function() {
-					// lastExpando = drawer;
-				// });
+				drawer.closeEvent.subscribe(function() {
+					joDOM.removeCSSClass(icon, "open"); 
+				});
+				expandEvent.subscribe(function(o) {
+					if(o.drawer !== drawer && drawer.isOpen())	drawer.close()
+				});
 				
 				function modifyLevel(value, source, modifier) {
 					var v = (levelInput.getValue() || 1)+modifier;
@@ -83,7 +111,6 @@ var App = (function App() {
 				addLevel.selectEvent.subscribe(modifyLevel, this, 1);
 				
 				classSelect.selectEvent.subscribe(function() {
-					console.log("selectEvent");
 					joEvent.stop();
 				});
 				
@@ -91,10 +118,11 @@ var App = (function App() {
 					e.value = Math.max(Math.min(e.value,preferences.getProperty("maxLevel")), 1);
 				});
 				
-				function updateStrength(value) {
-					item.setProperty("strength", Math.round(value));
+				function updateStrength(value, source) {
+					strengthLabel.setData(Math.round(value));	
 				}
-				slider.changeEvent.subscribe(updateStrength)
+				
+				slider.changeEvent.subscribe(updateStrength, this)
 				slider.slideStartEvent.subscribe(function() {
 					joEvent.stop();
 					list.setValue(index);
@@ -110,9 +138,6 @@ var App = (function App() {
 			
 			list.refresh();
 			list.selectEvent.subscribe(function(index) {
-				if(lastExpando) {
-					lastExpando.close();
-				}
 				b.enable();
 			})
 			
@@ -193,6 +218,10 @@ var App = (function App() {
 	
 	/*** Methods ****/
 	function init() {
+		if (window.PalmSystem) {
+			window.PalmSystem.setWindowOrientation('free');
+		}
+		
 		for(var cardName in cards) {
 			joCache.set(cardName, cards[cardName]);
 		}
@@ -224,4 +253,7 @@ var App = (function App() {
 	}
 })();
 
-window.onload = App.init;
+joEvent.on(window, "load", function() {
+	App.init();
+	navigator.device.deviceReady();
+});

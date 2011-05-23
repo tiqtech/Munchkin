@@ -453,31 +453,12 @@ joDOM = {
 
 	removeCSSClass: function(node, classname, toggle) {
 		node = joDOM.get(node);
+		var c = node.className || "";
 
-		if (typeof node.className !== "undefined") {
-			var n = node.className.split(/\s+/);
-
-			for (var i = 0, l = n.length; i < l; i++) {
-				if (n[i] == classname) {
-					if (l == 1) {
-						node.className = "";
-					}
-					else {
-						n.splice(i, i);
-						node.className = n.join(" ");
-					}
-
-					return;
-				}
-			}
-
-			if (toggle) {
-				n.push(classname);
-				node.className = n.join(" ");
-			}
-		}
-		else {
-			node.className = classname;
+		var re = new RegExp(classname.replace(/^\s*(.)(.*)(.)\s*$/,"(^$1|\\s$1)$2($3\\s|$3$)"));
+		node.className = c.replace(re, " ");
+		if(toggle) {
+			node.className += " " + classname;
 		}
 	},
 

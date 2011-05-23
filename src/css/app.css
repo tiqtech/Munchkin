@@ -59,7 +59,11 @@ jocard.main .player-details.open joflexrow {
 	background-color:inherit;
 }
 
-jocard.main .player-details  > joflexrow > joicon {
+.hideme {
+	display:none;
+}
+
+jocard.main jolistitem > joflexrow > joicon {
     display:block;
 	background: url(expando.png) no-repeat;
 	-webkit-background-size: 100% 100%;
@@ -70,8 +74,8 @@ jocard.main .player-details  > joflexrow > joicon {
 	-webkit-box-flex:0;
 }
 
-jocard.main .player-details.open > joflexrow > joicon {
--webkit-transform: rotate(90deg);
+jocard.main jolistitem > joflexrow > joicon.open {
+	-webkit-transform: rotate(90deg);
 }
 
 jocard.main .player-details  > joexpandocontent {
@@ -118,6 +122,11 @@ jocaption.player-name {
 
 joslider.animate josliderthumb {
 	-webkit-transition: all 100ms linear;
+}
+
+jocard.battle > joflexrow > jocaption {
+	width:80px;
+	-webkit-box-flex:0;
 }
 
 /* card transitions */
