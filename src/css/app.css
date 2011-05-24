@@ -1,4 +1,67 @@
+body {
+	background:#222222;
+	background:url("../images/bg.jpg");
+}
 
+jocard {
+	background:transparent;
+}
+
+avatar {
+	border:2px solid #222222;
+	background-color:#222222;
+	-webkit-border-radius:8px;
+	width:80px;
+	height:100px;
+	display:table;
+	color:#ffffff;
+	-webkit-box-shadow:3px 3px 5px #888;
+	margin:10px;
+}
+
+avatar .player-photo {
+	background-color:#ffffff;
+	-webkit-border-radius:8px;
+	position:relative;
+}
+
+avatar .player-photo joflexrow {
+	position:absolute;
+	bottom:0px;
+	width:100%;
+}
+
+avatar jocaption.player-level {
+	text-align:center;
+	font-weight:bold;
+	-webkit-box-flex:0;
+	background-color:red;
+	color:white;
+	margin:0px;
+	width:16px;
+	-webkit-border-radius:8px;
+}
+
+avatar jocaption.player-name {
+	text-align:center;
+	-webkit-box-flex:0;
+	padding:0px;
+	margin:0px;
+	height:20px;
+}
+
+avatar jocaption.player-gear {
+	text-align:center;
+	font-weight:bold;
+	-webkit-box-flex:0;
+	background-color:green;
+	color:white;
+	margin:0px;
+	width:16px;
+	-webkit-border-radius:8px;
+}
+
+/*
 .selected {
 	background-color: #ffffff;
 }
@@ -10,15 +73,6 @@ jolabeledslider {
 jolabeledslider jolabel {
 	width:25px;
 	-webkit-box-flex:0;
-}
-
-body {
-	background:#222222;
-	background:url("../images/bg.jpg");
-}
-
-jocard {
-	background:transparent;
 }
 
 jocard.main jolistitem {
@@ -130,8 +184,6 @@ jocard.battle > joflexrow > jocaption {
 	-webkit-box-flex:0;
 }
 
-/* card transitions */
-
 jostack > .next {
   z-index: -1;
   opacity: 0.5;
@@ -152,3 +204,4 @@ jostack > .prev {
   height: 100%;
   overflow: hidden;
 }
+*/
