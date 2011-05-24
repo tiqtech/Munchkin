@@ -29,6 +29,21 @@ joshim>joflexcol>*:last-child {
 	display: none;
 }
 
-jobackbutton.active {
+/*jobackbutton.active {
   display: none;
+}*/
+
+jonavbar {
+	-webkit-border-radius:20px;
+	margin:3px;
+}
+
+jobackbutton {
+	-webkit-border-radius:20px;
+	margin-left:4px;
+}
+
+josliderthumb, jobutton {
+	background-attachment:fixed;
+	background-position:top left;
 }

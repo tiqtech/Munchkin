@@ -14,10 +14,11 @@ jolabeledslider jolabel {
 
 body {
 	background:#222222;
+	background:url("../images/bg.jpg");
 }
 
 jocard {
-	background:url("../images/bg.jpg");
+	background:transparent;
 }
 
 jocard.main jolistitem {

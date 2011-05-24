@@ -63,9 +63,9 @@ var App = (function App() {
 						new joExpandoContent([
 							new joFlexrow([
 								new joLabel("Level"),
-								subLevel = new joButton("<"),
+								subLevel = new joButton("&lt;"),
 								levelInput = new joInput(item.link("level")),
-								addLevel = new joButton(">"),
+								addLevel = new joButton("&gt;"),
 								new joCaption()
 							]).setClassName("level-row"),
 							new joFlexrow([

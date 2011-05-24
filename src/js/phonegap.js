@@ -824,13 +824,15 @@ Mojo = {
 	// used to redirect keyboard events to DOM event "back"
 	onKeyUp: function(e) {
 		if (e.keyCode == 27)
-			this.fireEvent(window, "back");
+			Mojo.fireEvent(window.document, "mojo-back");
 	},
 		
 	// private method, used to fire off DOM events
 	fireEvent: function(element, event, data) {
-		var e = document.createEvent("Event");
-		e.initEvent(event, false, true);
+		var e = window.document.createEvent("HTMLEvents");
+		e.initEvent(event, true, true);
+//		var e = document.createEvent("Event");
+//		e.initEvent(event, false, true);
 		
 		if (data)
 			e.data = data;
