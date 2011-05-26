@@ -22,10 +22,12 @@ Munchkin.Cards.main = function() {
 			levelSlider.setRecord(record);
 			gearSlider.setRecord(record);
 			
-			nameRow.setStyle({"visibility":"visible"});
-			levelSlider.setStyle({"visibility":"visible"});
-			gearSlider.setStyle({"visibility":"visible"});
+			var visible = {"visibility":"visible"};
+			nameRow.setStyle(visible);
+			levelSlider.setStyle(visible);
+			gearSlider.setStyle(visible);
 			
+			joFocus.set(nameField);
 		}
 	}
 	
@@ -49,6 +51,10 @@ Munchkin.Cards.main = function() {
 		
 		scroller.setData(new joContainer(players).setStyle({"width":(players.length*100) + "px","height":"120px"}));
 		addPlayer.selectEvent.subscribe(addNewPlayer);
+		
+		if(selectedPlayer) {
+			scroller.moveTo(-selectedPlayer.getContainer().offsetLeft, 0);
+		}
 	}
 	
 	function addNewPlayer() {
@@ -61,6 +67,12 @@ Munchkin.Cards.main = function() {
 		setupScroller(newPlayer);
 	}
 	
+	function startBattle() {
+		if (selectedPlayer) {
+			Munchkin.App.go(new Munchkin.Cards.battle(selectedPlayer.getRecord()));
+		}
+	}
+	
 	/** UI **/
 	
 	var card = new joCard([
@@ -68,13 +80,14 @@ Munchkin.Cards.main = function() {
 			new joFlexrow([
 				new joCaption("Players").setClassName("players-label"),
 				scroller = new joScroller().setClassName("h-scroller").setMode("horizontal")
-			]),
+			]).setStyle({"border-bottom":"1px solid #222222"}),
 			nameRow = new joFlexrow([
 				new joCaption().setClassName("player-details-label player-name-label"),
 				nameField = new joInput(undefined, mockPlayer.link("name"))
 			]).setClassName("player-name-row").setStyle({"visibility":"hidden"}),
 			levelSlider = new Munchkin.Controls.SliderRow("player-level-label", mockPlayer, "level",1,Munchkin.App.getPreferences().getProperty("maxLevel")).setStyle({"visibility":"hidden"}),
 			gearSlider = new Munchkin.Controls.SliderRow("player-strength-label", mockPlayer, "gear",0,25).setStyle({"visibility":"hidden"}),
+			battle = new joButton("Battle")
 			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:480px;width:320px;border:1px solid black\"></div>"),
 			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:400px;width:320px;border:1px solid black\"></div>"),
 			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:800px;width:480px;border:1px solid black\"></div>")
@@ -84,6 +97,7 @@ Munchkin.Cards.main = function() {
 	setupScroller();
 	
 	/** Event Handlers **/
+	battle.selectEvent.subscribe(startBattle);
 	
 	return card;
 };

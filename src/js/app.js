@@ -17,7 +17,6 @@ Munchkin.App = (function() {
 		maxLevel:10
 	});
 	
-	
 	/*** Methods ****/
 	
 	function animate(o) {
@@ -53,11 +52,17 @@ Munchkin.App = (function() {
 			param = card;
 		}
 		
-		stack.push(joCache.get(param));
+		if(param instanceof joView) {
+			stack.push(param)
+		} else {
+			stack.push(joCache.get(param));
+		}
 	};
 	
 	return {
 		init:init,
+		go:navigate,
+		back:function() { stack.pop() },
 		getScreen:function() { return screen; },
 		getPlayers:function() { return players; },
 		getPreferences:function() { return preferences; }
