@@ -2,21 +2,16 @@ jo.load();
 phoneGap = new PhoneGap();
 
 Munchkin = {
-	cards:{},
-	controls:{}
+	Cards:{},
+	Controls:{}
 };
 
-var App = (function() {
+Munchkin.App = (function() {
 	/** Variables **/
 	var nav, screen, stack, cards, players, selectedPlayer, preferences;
 	
 	/** Setup **/
-	players = new joDataSource([
-		new joRecord({name:"Duffy", level:1, strength:0}),
-		new joRecord({name:"Haas", level:1, strength:0}),
-		new joRecord({name:"Rust", level:1, strength:0}),
-		new joRecord({name:"Smith", level:1, strength:0})
-	])
+	players = new joDataSource([]);	// have to include empty array otherwise getData() will return null later
 	
 	preferences = new joRecord({
 		maxLevel:10
@@ -35,8 +30,8 @@ var App = (function() {
 			window.PalmSystem.setWindowOrientation('free');
 		}
 		
-		for(var cardName in Munchkin.cards) {
-			joCache.set(cardName, Munchkin.cards[cardName]);
+		for(var cardName in Munchkin.Cards) {
+			joCache.set(cardName, Munchkin.Cards[cardName]);
 		}
 		
 		screen = new joScreen(
@@ -62,11 +57,14 @@ var App = (function() {
 	};
 	
 	return {
-		init:init
+		init:init,
+		getScreen:function() { return screen; },
+		getPlayers:function() { return players; },
+		getPreferences:function() { return preferences; }
 	}
 })();
 
 joEvent.on(window, "load", function() {
-	App.init();
+	Munchkin.App.init();
 	navigator.device.deviceReady();
 });

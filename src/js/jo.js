@@ -1514,12 +1514,12 @@ joRecord.extend(joDataSource, {
 	},
 	
 	load: function() {
-		console.log("TODO: extend the load() method");
+		//console.log("TODO: extend the load() method");
 		return this;
 	},
 
 	save: function() {
-		console.log("TODO: extend the save() method");
+		//console.log("TODO: extend the save() method");
 		return this;
 	}
 });
@@ -2903,6 +2903,12 @@ joControl.extend(joView, {
 	},
 	
 	setDataSource: function(source) {
+		// rjd - unsubscribe previous dataSource event handlers
+		if(this.dataSource) {
+			this.dataSource.changeEvent.unsubscribe(this.setData, this);
+			this.changeEvent.unsubscribe(this.dataSource.setData, this.dataSource);
+		}
+		
 		this.dataSource = source;
 		source.changeEvent.subscribe(this.setData, this);
 
@@ -2914,8 +2920,14 @@ joControl.extend(joView, {
 	},
 	
 	setValueSource: function(source) {
+		// rjd - unsubscribe previous valueSource event handlers
+		if(this.valueSource) {
+			this.valueSource.changeEvent.unsubscribe(this.setValue, this);
+			this.changeEvent.unsubscribe(this.valueSource.setData, this.valueSource);
+		}
+		
 		this.valueSource = source;
-		source.changeEvent.subscribe(this.setData, this);
+		source.changeEvent.subscribe(this.setValue, this);
 		
 		var value = source.getData();
 		this.setValue((value !== 'undefined') ? value : null);
@@ -3829,7 +3841,7 @@ joScroller.extend(joContainer, {
 	transitionEnd: "webkitTransitionEnd",
 	
 	setEvents: function() {
-//		joEvent.capture(this.container, "click", this.onClick, this);
+		joEvent.capture(this.container, "click", this.onClick, this);	// rjd - added back in to prevent scroll for causing select events to fire on contained controls
 		joEvent.on(this.container, "mousedown", this.onDown, this);
 	},
 	
@@ -3885,7 +3897,7 @@ joScroller.extend(joContainer, {
 		
 		var y = point.y - this.points[0].y;
 		var x = point.x - this.points[0].x;
-
+		
 //		if (y == 0)
 //			return;
 		
@@ -3920,7 +3932,7 @@ joScroller.extend(joContainer, {
 
 		joEvent.remove(document.body, "mousemove", this.mousemove, true);
 		joEvent.remove(document.body, "mouseup", this.mouseup, false);
-
+		
 		this.mousemove = null;
 		this.inMotion = false;
 
@@ -4076,7 +4088,7 @@ joScroller.extend(joContainer, {
 		var maxx = 0 - node.offsetWidth + this.container.offsetWidth;
 
 		if (this.eventset)
-			joEvent.remove(node, this.transitionEnd, this.eventset);
+			joEvent.remove(node, this.transitionEnd, this.eventset, true);
 		
 		this.eventset = null;
 
@@ -4091,7 +4103,7 @@ joScroller.extend(joContainer, {
 			dx = 0;
 		else if (dx < maxx)
 			dx = maxx;
-
+			
 		if (dx != left || dy != top) {
 			joDOM.addCSSClass(node, 'flickback');
 			this.moveTo(dx, dy);
@@ -4133,6 +4145,13 @@ joScroller.extend(joContainer, {
 	
 	setData: function(data) {
 		return joContainer.prototype.setData.apply(this, arguments);
+	},
+	// rjd - added setMode to ease configuration/chainability 
+	setMode: function(mode) {
+		this.horizontal = (mode === "horizontal" || mode === "both");
+		this.vertical = (mode === "vertical" || mode === "both");
+		
+		return this;
 	}
 });
 /**

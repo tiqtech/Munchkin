@@ -1,29 +1,42 @@
-Munchkin.controls.Avatar = function(name) {
+Munchkin.Controls.Avatar = function(player) {
 	/** Variables **/
 	var control, button;
+	
+	this.player = player;
+	this.selectEvent = new joSubject(this);
 	
 	/** UI **/
 	control = new joFlexcol([
 		new joContainer([
-			new joCaption().setClassName("player-photo-spacer"),
+			new joCaption("photo!").setClassName("player-photo-spacer"),
 			new joFlexrow([
-				new joCaption("3").setClassName("player-level"),
+				new joCaption(player.link("level")).setClassName("player-level"),
 				new joCaption(),
-				new joCaption("8").setClassName("player-gear")
+				new joCaption(player.link("gear")).setClassName("player-gear")
 			]),
 		]).setClassName("player-photo"),
-		new joCaption(name).setClassName("player-name")
+		new joCaption(player.link("name")).setClassName("player-name")
 	]);
 	
 	/** Event Handlers **/
 	joEvent.on(control, "click", function() {
-		console.log("selected avatar");
+		this.selectEvent.fire(player);
 	}, this);
 	
-	joContainer.call(this, control);
+	joContainer.call(this, control, player);
 }
 
-Munchkin.controls.Avatar.extend(joContainer, {
-	tagName:"avatar"
+Munchkin.Controls.Avatar.extend(joContainer, {
+	tagName:"avatar",
+	select: function(select) {
+		if(!!!select) {
+			joDOM.removeCSSClass(this.container, "selected");
+		} else {
+			joDOM.addCSSClass(this.container, "selected");
+		}
+	},
+	getRecord:function() {
+		return this.player;
+	}
 });
 

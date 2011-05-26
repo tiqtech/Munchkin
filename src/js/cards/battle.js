@@ -1,4 +1,4 @@
-Munchkin.cards.battle = function() {
+Munchkin.Cards.battle = function() {
 	
 	/** Methods **/
 	

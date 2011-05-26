@@ -7,12 +7,23 @@ jocard {
 	background:transparent;
 }
 
+.players-label {
+	height:100px;
+	line-height:120px;
+	-webkit-transform:rotate(-90deg);
+	-webkit-box-flex:0;
+	margin-left:-20px;
+	font-weight:bold;
+}
+
+joScroller > joContainer > avatar {
+	float:left;
+}
+
 avatar {
 	border:2px solid #222222;
 	background-color:#222222;
 	-webkit-border-radius:8px;
-	width:80px;
-	height:100px;
 	display:table;
 	color:#ffffff;
 	-webkit-box-shadow:3px 3px 5px #888;
@@ -35,10 +46,10 @@ avatar jocaption.player-level {
 	text-align:center;
 	font-weight:bold;
 	-webkit-box-flex:0;
-	background-color:red;
-	color:white;
+	background-color:rgba(200,200,240,0.7);
+	color:#202040;
 	margin:0px;
-	width:16px;
+	width:18px;
 	-webkit-border-radius:8px;
 }
 
@@ -54,13 +65,59 @@ avatar jocaption.player-gear {
 	text-align:center;
 	font-weight:bold;
 	-webkit-box-flex:0;
-	background-color:green;
-	color:white;
+	background-color:rgba(200,200,240,0.7);
+	color:#202040;
 	margin:0px;
-	width:16px;
+	width:18px;
 	-webkit-border-radius:8px;
 }
 
+joscroller.h-scroller {
+	position:static;
+	height:120px;
+	width:100%;
+	-webkit-box-shadow:3px 3px 5px #888 inset;
+	border:1px solid #222222;
+	z-index:10;
+	margin-right:0px;	/* overriding joflexrow > * */
+}
+
+joscroller.h-scroller > * {
+	position:relative;
+}
+
+.player-details-label {
+	width:30px;
+	line-height:40px;
+	-webkit-box-flex:0;
+	-webkit-background-size:100% auto;
+}
+
+.player-details-value {
+	width:30px;
+	height:40px;
+	line-height:40px;
+	font-weight:bold;
+	font-size:larger;
+	text-align:center;
+	-webkit-box-flex:0;
+}
+
+jocaption.player-level-label {
+	background:url(../images/level.png) no-repeat center center;
+}
+
+jocaption.player-strength-label {
+	background:url(../images/strength.png) no-repeat center center;
+}
+
+.player-name-row input {
+	margin-top:10px;
+}
+
+jocaption.player-name-label { /* .player-details-label */
+	background:url(../images/player.png) no-repeat center center;
+}
 /*
 .selected {
 	background-color: #ffffff;
