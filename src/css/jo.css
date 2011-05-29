@@ -767,6 +767,11 @@ jobutton {
   background-repeat: repeat-x;
 }
 jocard {
+  position:absolute;  /* rjd - moving absolute positioning from scroller to card */
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
   width: 100%;
   min-height: 100%;
   display: -webkit-box;
@@ -793,7 +798,7 @@ jocard > *:last-child {
   margin-bottom: 10px;
 }
 joscroller {
-  position: absolute;
+  /*position: absolute;*/ /* rjd - removing absolute position from scroller */
   display: block;
   height: 100%;
   width: 100%;

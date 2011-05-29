@@ -37,7 +37,7 @@ Munchkin.App = (function() {
 			new joContainer([
 				new joFlexcol([
 					nav = new joNavbar(),
-					stack = new joStackScroller()
+					stack = new joStack()
 				])
 			]).setStyle({position: "absolute", top: "0", left: "0", bottom: "0", right: "0"})
 		);

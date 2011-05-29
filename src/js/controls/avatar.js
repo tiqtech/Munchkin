@@ -1,20 +1,22 @@
 Munchkin.Controls.Avatar = function(player) {
 	/** Variables **/
-	var control, button;
+	var control, button, photo = player.getProperty("avatar");
 	
 	this.player = player;
 	this.selectEvent = new joSubject(this);
 	
+	var style = (photo) ? {"backgroundImage":"url(" + photo + ")"} : {};
+	
 	/** UI **/
 	control = new joFlexcol([
 		new joContainer([
-			new joCaption("photo!").setClassName("player-photo-spacer"),
+			new joCaption().setClassName("player-photo-spacer"),
 			new joFlexrow([
 				new joCaption(player.link("level")).setClassName("player-level"),
 				new joCaption(),
 				new joCaption(player.link("gear")).setClassName("player-gear")
 			]),
-		]).setClassName("player-photo"),
+		]).setClassName("player-photo").setStyle(style),
 		new joCaption(player.link("name")).setClassName("player-name")
 	]);
 	

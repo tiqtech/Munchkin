@@ -7,6 +7,42 @@ jocard {
 	background:transparent;
 }
 
+jofade {
+	position:absolute;
+	top:auto;
+	left:auto;
+	right:auto;
+	bottom:auto;
+}
+
+jofade.fade-left {
+	left:0px;
+	height:100%;
+	width:15px;
+	background:url(../images/fade-left.png) repeat-y;
+}
+
+jofade.fade-right {
+	right:0px;
+	height:100%;
+	width:15px;
+	background:url(../images/fade-right.png) repeat-y;
+}
+
+jofade.fade-top {
+	top:0px;
+	width:100%;
+	height:15px;
+	background:url(../images/fade-top.png) repeat-x;
+}
+
+jofade.fade-bottom {
+	bottom:0px;
+	width:100%;
+	height:15px;
+	background:url(../images/fade-bottom.png) repeat-x;
+}
+
 .players-label {
 	height:100px;
 	line-height:120px;
@@ -34,12 +70,23 @@ avatar .player-photo {
 	background-color:#ffffff;
 	-webkit-border-radius:8px;
 	position:relative;
+	-webkit-background-size:100% 100%;
+	background-position:center center;
 }
+
+avatar.add-player .player-photo {
+	background-image:url("../images/avatar/shadow.jpg");
+}
+
 
 avatar .player-photo joflexrow {
 	position:absolute;
 	bottom:0px;
 	width:100%;
+}
+
+avatar.add-player .player-photo joflexrow {
+	visibility:hidden;
 }
 
 avatar jocaption.player-level {
@@ -75,6 +122,11 @@ avatar jocaption.player-gear {
 	-webkit-border-radius:8px;
 }
 
+.player-scroller-row {
+	-webkit-box-flex:0;
+	height:120px;
+}
+
 joscroller.h-scroller {
 	position:static;
 	height:120px;
@@ -86,6 +138,12 @@ joscroller.h-scroller {
 
 joscroller.h-scroller > * {
 	position:relative;
+}
+
+joscroller.player-details {
+	position:relative;
+	height:auto;
+	width:auto;
 }
 
 .player-details-label {
@@ -113,6 +171,14 @@ jocaption.player-strength-label {
 	background:url(../images/strength.png) no-repeat center center;
 }
 
+jocaption.monster-label {
+	background:url(../images/monster.png) no-repeat center center;
+}
+
+jocaption.modifier-label {
+	background:url(../images/modifier.png) no-repeat center center;
+}
+
 .player-name-row input {
 	margin-top:10px;
 }
@@ -120,6 +186,28 @@ jocaption.player-strength-label {
 jocaption.player-name-label { /* .player-details-label */
 	background:url(../images/player.png) no-repeat center center;
 }
+
+jostack > .next {
+  z-index: -1;
+  opacity: 0.5;
+  -webkit-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(100%);
+  -moz-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(100%);
+  -o-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(100%);
+  -ms-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(100%);
+  height: 100%;
+  overflow: hidden;
+}
+jostack > .prev {
+  z-index: 1;
+  opacity:0.5;
+  -webkit-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(-100%);
+  -moz-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(-100%);
+  -o-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(-100%);
+  -ms-transform: scale3d(0.8, 0.8, 0.8) translatey(-10%) translatex(-100%);
+  height: 100%;
+  overflow: hidden;
+}
+
 /*
 .selected {
 	background-color: #ffffff;

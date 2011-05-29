@@ -1,8 +1,21 @@
+joFade = function() {
+	joView.call(this);
+}
+
+joFade.extend(joView, {
+	tagName:"jofade",
+	setPosition:function(position) {
+		this.setClassName("fade-"+position);
+		
+		return this;
+	}
+});
+
 Munchkin.Cards.main = function() {
 	/** Variables **/	
 	var mockPlayer = new joRecord({});							// data
 	var scroller, players, addPlayer, selectedPlayer,			// controls
-		nameRow, nameField, levelSlider, gearSlider;
+		nameRow, nameField, levelSlider, gearSlider, playerDetails;
 		
 	/** Methods **/
 	function updateName(value) {
@@ -23,9 +36,7 @@ Munchkin.Cards.main = function() {
 			gearSlider.setRecord(record);
 			
 			var visible = {"visibility":"visible"};
-			nameRow.setStyle(visible);
-			levelSlider.setStyle(visible);
-			gearSlider.setStyle(visible);
+			playerDetails.setStyle(visible);
 			
 			joFocus.set(nameField);
 		}
@@ -47,7 +58,7 @@ Munchkin.Cards.main = function() {
 			}
 		}
 		
-		players.push(addPlayer = new Munchkin.Controls.Avatar(new joRecord({"name":"Add ..."})).setStyle(dimensions))
+		players.push(addPlayer = new Munchkin.Controls.Avatar(new joRecord({"name":"Add ..."})).setClassName("add-player").setStyle(dimensions))
 		
 		scroller.setData(new joContainer(players).setStyle({"width":(players.length*100) + "px","height":"120px"}));
 		addPlayer.selectEvent.subscribe(addNewPlayer);
@@ -60,11 +71,26 @@ Munchkin.Cards.main = function() {
 	function addNewPlayer() {
 		var p = Munchkin.App.getPlayers();
 		var data = p.getData();
-		var newPlayer = new joRecord({name:"New Player",level:1,gear:0});
+		var newPlayer = new joRecord({name:"New Player",level:1,gear:0,avatar:"images/avatar/" + (data.length+1) + ".jpg"});
 		data.push(newPlayer)
 		p.setData(data);
 		
 		setupScroller(newPlayer);
+	}
+	
+	function removePlayer() {
+		var p = Munchkin.App.getPlayers();
+		var data = p.getData();
+		var selected = selectedPlayer.getRecord();
+		for(var i=0;i<data.length;i++) {
+			if(data[i] === selected) {
+				data.splice(i, 1);
+			}
+		}
+		
+		p.setData(data);
+		playerDetails.setStyle({"visibility":"hidden"});
+		setupScroller();
 	}
 	
 	function startBattle() {
@@ -80,17 +106,21 @@ Munchkin.Cards.main = function() {
 			new joFlexrow([
 				new joCaption("Players").setClassName("players-label"),
 				scroller = new joScroller().setClassName("h-scroller").setMode("horizontal")
-			]).setStyle({"border-bottom":"1px solid #222222"}),
-			nameRow = new joFlexrow([
-				new joCaption().setClassName("player-details-label player-name-label"),
-				nameField = new joInput(undefined, mockPlayer.link("name"))
-			]).setClassName("player-name-row").setStyle({"visibility":"hidden"}),
-			levelSlider = new Munchkin.Controls.SliderRow("player-level-label", mockPlayer, "level",1,Munchkin.App.getPreferences().getProperty("maxLevel")).setStyle({"visibility":"hidden"}),
-			gearSlider = new Munchkin.Controls.SliderRow("player-strength-label", mockPlayer, "gear",0,25).setStyle({"visibility":"hidden"}),
-			battle = new joButton("Battle")
-			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:480px;width:320px;border:1px solid black\"></div>"),
-			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:400px;width:320px;border:1px solid black\"></div>"),
-			// new joHTML("<div style=\"position:fixed;top:0px;left:0px;height:800px;width:480px;border:1px solid black\"></div>")
+			]).setClassName("player-scroller-row"),
+			playerDetails = new joScroller([
+				new joContainer([
+					nameRow = new joFlexrow([
+						new joCaption().setClassName("player-details-label player-name-label"),
+						nameField = new joInput(undefined, mockPlayer.link("name"))
+					]).setClassName("player-name-row"),
+					levelSlider = new Munchkin.Controls.SliderRow("player-level-label", mockPlayer, "level",1,Munchkin.App.getPreferences().getProperty("maxLevel")),
+					gearSlider = new Munchkin.Controls.SliderRow("player-strength-label", mockPlayer, "gear",0,25),
+					battle = new joButton("Battle"),
+					removeButton = new joButton("Remove")
+				]),
+				new joFade().setPosition("top"),
+				new joFade().setPosition("bottom")
+			]).setClassName("player-details").setStyle({"visibility":"hidden"})
 		])
 	]).setTitle("Munchkin!");
 	
@@ -98,6 +128,7 @@ Munchkin.Cards.main = function() {
 	
 	/** Event Handlers **/
 	battle.selectEvent.subscribe(startBattle);
+	removeButton.selectEvent.subscribe(removePlayer);
 	
 	return card;
 };

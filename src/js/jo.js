@@ -3841,7 +3841,7 @@ joScroller.extend(joContainer, {
 	transitionEnd: "webkitTransitionEnd",
 	
 	setEvents: function() {
-		joEvent.capture(this.container, "click", this.onClick, this);	// rjd - added back in to prevent scroll for causing select events to fire on contained controls
+		//joEvent.capture(this.container, "click", this.onClick, this);	// rjd - added back in to prevent scroll for causing select events to fire on contained controls
 		joEvent.on(this.container, "mousedown", this.onDown, this);
 	},
 	
@@ -3952,7 +3952,7 @@ joScroller.extend(joContainer, {
 			dy += (this.points[i].y - this.points[i + 1].y);
 			dx += (this.points[i].x - this.points[i + 1].x);
 		}
-
+		
 		var max = 0 - node.offsetHeight + this.container.offsetHeight;
 		var maxx = 0 - node.offsetWidth + this.container.offsetWidth;
 		
@@ -3973,10 +3973,16 @@ joScroller.extend(joContainer, {
 
 			this.scrollBy(flickx, flick, false);
 
-			joDefer(this.snapBack, this, 3000);
+			if(this.snapBackTimer) {
+				joDefer.cancel(this.snapBackTimer);
+			}
+			this.snapBackTimer = joDefer(this.snapBack, this, 3000);
 		}
-		else {
-			joDefer(this.snapBack, this, 10);
+		else if(dx !== 0 && dy !== 0){ // rjd - ensuring scroller doesn't move when contents are smaller than size and user only clicks/taps (doesn't flick).  not sure if this is the right place for this.
+			if(this.snapBackTimer) {
+				joDefer.cancel(this.snapBackTimer);
+			}
+			this.snapBackTimer = joDefer(this.snapBack, this, 10);
 		}
 
 	},
@@ -4124,6 +4130,8 @@ joScroller.extend(joContainer, {
 			return this;
 		
 		this.setPosition(x * this.horizontal, y * this.vertical, node);
+		
+		console.log("moveTo", x, y);
 
 		node.jotop = y;
 		node.joleft = x;
@@ -4839,6 +4847,11 @@ joInput.extend(joControl, {
 		this.value = this.getValue();
 		if (this.valueSource)
 			this.valueSource.set(this.value);
+	},
+	
+	focus: function() {
+		joControl.prototype.focus.call(this);
+		this.container.select();
 	}
 });
 
