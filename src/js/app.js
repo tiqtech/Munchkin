@@ -59,6 +59,11 @@ Munchkin.App = (function() {
 		}
 	};
 	
+	// webOS back gesture support
+	joGesture.backEvent.subscribe(function() {
+		stack.pop();
+	});
+	
 	return {
 		init:init,
 		go:navigate,

@@ -29,9 +29,9 @@ joshim>joflexcol>*:last-child {
 	display: none;
 }
 
-/*jobackbutton.active {
+jobackbutton.active {
   display: none;
-}*/
+}
 
 jonavbar {
 	-webkit-border-radius:20px;

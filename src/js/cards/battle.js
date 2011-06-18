@@ -1,5 +1,5 @@
 Munchkin.Cards.battle = function(player) {
-	var victory, defeat, data = new joRecord({monster:1,modifier:0});
+	var playerBanner, monsterBanner, done, data = new joRecord({monster:1,modifier:0});
 	
 	/** Methods **/
 	function setupScroller(selection) {
@@ -27,30 +27,38 @@ Munchkin.Cards.battle = function(player) {
 	
 	/** UI **/
 	var card = new joCard([
-		new joFlexrow([
-			new joCaption("Players").setClassName("players-label"),
-			scroller = new joScroller().setClassName("h-scroller").setMode("horizontal")
-		]).setStyle({"border-bottom":"1px solid #222222"}),
-		new Munchkin.Controls.SliderRow("monster-label", data, "monster", 1, 50),
-		new Munchkin.Controls.SliderRow("modifier-label", data, "modifier", -20, 50),
-		new joFlexrow([
-			victory = new joButton("Victory"),
-			defeat = new joButton("Defeat")
+		new joFlexcol([
+			new joContainer([
+				new joCaption().setClassName("players-label"),
+				scroller = new joScroller().setClassName("h-scroller").setMode("horizontal")
+			]).setClassName("player-scroller-row"),
+			new joScroller([
+				new joContainer([
+					new joFlexrow([
+						new joCaption(),
+						playerBanner = new joCaption(player.getProperty("gear") + player.getProperty("level")).setClassName("battle-banner player"),
+						new joCaption().setClassName("versus-text"),
+						monsterBanner = new joCaption("0").setClassName("battle-banner monster"),
+						new joCaption()
+					]),
+					new Munchkin.Controls.SliderRow("monster-label", data, "monster", 1, 50),
+					new Munchkin.Controls.SliderRow("modifier-label", data, "modifier", -20, 50),
+					done = new joButton("Done")
+				])
+			])
 		])
 	]).setTitle("Battle");
 	
 	setupScroller(player);
 	
 	/** Event Handlers **/
-	victory.selectEvent.subscribe(function() {
-		level = player.getProperty("level");
-		player.setProperty("level", ++level);
+	done.selectEvent.subscribe(function() {
 		Munchkin.App.back();
 	});
 	
-	defeat.selectEvent.subscribe(function() {
-		Munchkin.App.back();
-	});
+	data.changeEvent.subscribe(function(property) {
+		monsterBanner.setData(data.getProperty("monster") + data.getProperty("modifier"));
+	})
 	
 	return card;
 };

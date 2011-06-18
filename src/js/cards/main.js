@@ -44,6 +44,7 @@ Munchkin.Cards.main = function() {
 	
 	function setupScroller(selection) {
 		var dimensions = {"width":"80px","height":"100px"};
+		var outerWidth = 96; // width+border*2+margin*2
 		var p = Munchkin.App.getPlayers().getData();
 		players = [];
 		selectedPlayer = null;	// clear selection when rebuilding controls
@@ -60,11 +61,12 @@ Munchkin.Cards.main = function() {
 		
 		players.push(addPlayer = new Munchkin.Controls.Avatar(new joRecord({"name":"Add ..."})).setClassName("add-player").setStyle(dimensions))
 		
-		scroller.setData(new joContainer(players).setStyle({"width":(players.length*100) + "px","height":"120px"}));
+		scroller.setData(new joContainer(players).setStyle({"width":(players.length*outerWidth) + "px","height":"120px"}));
 		addPlayer.selectEvent.subscribe(addNewPlayer);
 		
 		if(selectedPlayer) {
-			scroller.moveTo(-selectedPlayer.getContainer().offsetLeft, 0);
+			scroller.moveTo(-selectedPlayer.getContainer().offsetLeft+10, 0);
+			scroller.snapBack();
 		}
 	}
 	
@@ -103,8 +105,8 @@ Munchkin.Cards.main = function() {
 	
 	var card = new joCard([
 		new joFlexcol([
-			new joFlexrow([
-				new joCaption("Players").setClassName("players-label"),
+			new joContainer([
+				new joCaption().setClassName("players-label"),
 				scroller = new joScroller().setClassName("h-scroller").setMode("horizontal")
 			]).setClassName("player-scroller-row"),
 			playerDetails = new joScroller([

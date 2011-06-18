@@ -442,7 +442,7 @@ Device.prototype.deviceReady = function() {
 	// tell webOS this app is ready to show
 	if (window.PalmSystem) {
 		// setup keystroke events for forward and back gestures
-		document.body.addEventListener("keyup", Mojo.onKeyUp, true);
+		document.addEventListener("keyup", Mojo.onKeyUp, true);
 
 		setTimeout(function() { PalmSystem.stageReady(); PalmSystem.activate(); }, 1);
 		alert = this.showBanner;
@@ -824,15 +824,14 @@ Mojo = {
 	// used to redirect keyboard events to DOM event "back"
 	onKeyUp: function(e) {
 		if (e.keyCode == 27)
-			Mojo.fireEvent(window.document, "mojo-back");
+			this.fireEvent(window, "back");
 	},
 		
 	// private method, used to fire off DOM events
 	fireEvent: function(element, event, data) {
-		var e = window.document.createEvent("HTMLEvents");
-		e.initEvent(event, true, true);
-//		var e = document.createEvent("Event");
-//		e.initEvent(event, false, true);
+		console.log("!!!!!")
+		var e = document.createEvent("Event");
+		e.initEvent(event, false, true);
 		
 		if (data)
 			e.data = data;

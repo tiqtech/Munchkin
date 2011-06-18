@@ -453,12 +453,31 @@ joDOM = {
 
 	removeCSSClass: function(node, classname, toggle) {
 		node = joDOM.get(node);
-		var c = node.className || "";
 
-		var re = new RegExp(classname.replace(/^\s*(.)(.*)(.)\s*$/,"(^$1|\\s$1)$2($3\\s|$3$)"));
-		node.className = c.replace(re, " ");
-		if(toggle) {
-			node.className += " " + classname;
+		if (typeof node.className !== "undefined") {
+			var n = node.className.split(/\s+/);
+
+			for (var i = 0, l = n.length; i < l; i++) {
+				if (n[i] == classname) {
+					if (l == 1) {
+						node.className = "";
+					}
+					else {
+						n.splice(i, i);
+						node.className = n.join(" ");
+					}
+
+					return;
+				}
+			}
+
+			if (toggle) {
+				n.push(classname);
+				node.className = n.join(" ");
+			}
+		}
+		else {
+			node.className = classname;
 		}
 	},
 
@@ -1514,12 +1533,11 @@ joRecord.extend(joDataSource, {
 	},
 	
 	load: function() {
-		//console.log("TODO: extend the load() method");
+		console.log("TODO: extend the load() method");
 		return this;
 	},
 
-	save: function() {
-		//console.log("TODO: extend the save() method");
+	save: function() {		console.log("TODO: extend the save() method");
 		return this;
 	}
 });
@@ -3841,7 +3859,7 @@ joScroller.extend(joContainer, {
 	transitionEnd: "webkitTransitionEnd",
 	
 	setEvents: function() {
-		//joEvent.capture(this.container, "click", this.onClick, this);	// rjd - added back in to prevent scroll for causing select events to fire on contained controls
+//		joEvent.capture(this.container, "click", this.onClick, this);	// rjd - added back in to prevent scroll for causing select events to fire on contained controls
 		joEvent.on(this.container, "mousedown", this.onDown, this);
 	},
 	
@@ -4083,38 +4101,40 @@ joScroller.extend(joContainer, {
 	// called after a flick transition to snap the view
 	// back into our container if necessary.
 	snapBack: function() {
-		var node = this.container.firstChild;
-		var top = this.getTop();
-		var left = this.getLeft();
+        var top, left, dy, dx;
 
-		var dy = top;
-		var dx = left;
+        var node = this.container.firstChild;
+        top = dy = this.getTop();
+        left = dx = this.getLeft();
 
-		var max = 0 - node.offsetHeight + this.container.offsetHeight;
-		var maxx = 0 - node.offsetWidth + this.container.offsetWidth;
+        // a = node dimensions, b = container dimensions
+        var a = {top:top, bottom:top + node.offsetHeight,left:left,right:left + node.offsetWidth,width:node.offsetWidth,height:node.offsetHeight};
+        var b = {top:0, bottom:this.container.offsetHeight,left:0,right:this.container.offsetWidth,width:this.container.offsetWidth,height:this.container.offsetHeight};
 
-		if (this.eventset)
-			joEvent.remove(node, this.transitionEnd, this.eventset, true);
-		
-		this.eventset = null;
+        if(a.left < b.left && a.right < b.right) {
+            dx = (a.width < b.width) ? b.left : b.width - a.width;
+        } else if((a.right > b.right && a.left > b.left) || a.width < b.width) {
+            dx = b.left;
+        }
 
-		joDOM.removeCSSClass(node, 'flick');
-		
-		if (dy > 0)
-			dy = 0;
-		else if (dy < max)
-			dy = max;
+        if(a.top < b.top && a.bottom < b.bottom) {
+            dy = (a.height < b.height) ? b.top : b.height - a.height;
+        } else if((a.bottom > b.bottom && a.top > b.top) || a.height < b.height) {
+            dy = b.top;
+        }
 
-		if (dx > 0)
-			dx = 0;
-		else if (dx < maxx)
-			dx = maxx;
-			
-		if (dx != left || dy != top) {
-			joDOM.addCSSClass(node, 'flickback');
-			this.moveTo(dx, dy);
-		}
-	},
+        if (this.eventset)
+            joEvent.remove(node, this.transitionEnd, this.eventset, true);
+        
+        this.eventset = null;
+
+        joDOM.removeCSSClass(node, 'flick');
+
+        if (dx != left || dy != top) {
+            joDOM.addCSSClass(node, 'flickback');
+            this.moveTo(dx, dy);
+        }
+    },
 
 	setScroll: function(x, y) {
 		this.horizontal = x ? 1 : 0;
@@ -4130,8 +4150,6 @@ joScroller.extend(joContainer, {
 			return this;
 		
 		this.setPosition(x * this.horizontal, y * this.vertical, node);
-		
-		console.log("moveTo", x, y);
 
 		node.jotop = y;
 		node.joleft = x;

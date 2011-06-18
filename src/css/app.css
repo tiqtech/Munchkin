@@ -1,10 +1,25 @@
 body {
-	background:#222222;
-	background:url("../images/bg.jpg");
+	background:#242422;
+	background:url("../images/bg.png");
 }
 
 jocard {
 	background:transparent;
+}
+
+jonavbar {
+	-webkit-border-image: url(../images/banner.png) 0 28 0 28 / 0 28 0 28 stretch stretch;
+	background: transparent;
+	color:#f2ce0a;
+	font-weight:bold;
+}
+
+jobutton {
+	background-color:#a23528;
+	border:2px solid #f2ce0a;
+	-webkit-border-radius:5px;
+	color:#f2ce0a;
+	font-weight:bold;
 }
 
 jofade {
@@ -43,15 +58,6 @@ jofade.fade-bottom {
 	background:url(../images/fade-bottom.png) repeat-x;
 }
 
-.players-label {
-	height:100px;
-	line-height:120px;
-	-webkit-transform:rotate(-90deg);
-	-webkit-box-flex:0;
-	margin-left:-20px;
-	font-weight:bold;
-}
-
 joScroller > joContainer > avatar {
 	float:left;
 }
@@ -62,8 +68,8 @@ avatar {
 	-webkit-border-radius:8px;
 	display:table;
 	color:#ffffff;
-	-webkit-box-shadow:3px 3px 5px #888;
-	margin:10px;
+	/*-webkit-box-shadow:3px 3px 5px #888;*/ /* dropping for webOS */
+	margin:6px;
 }
 
 avatar .player-photo {
@@ -89,6 +95,11 @@ avatar.add-player .player-photo joflexrow {
 	visibility:hidden;
 }
 
+avatar>joflexcol {
+	height:inherit;
+	width:inherit;
+}
+
 avatar jocaption.player-level {
 	text-align:center;
 	font-weight:bold;
@@ -109,6 +120,7 @@ avatar jocaption.player-name {
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
+	width:inherit
 }
 
 avatar jocaption.player-gear {
@@ -125,15 +137,28 @@ avatar jocaption.player-gear {
 .player-scroller-row {
 	-webkit-box-flex:0;
 	height:120px;
+	border-bottom:2px solid #242422;
+	position:relative;
+	padding-left:25px;
+}
+
+.players-label {
+	position:absolute;
+	top:-2px;
+	left:1px;
+	height: 160px;
+	width: 30px;
+	background: url(../images/players.png) no-repeat center center;
+	-webkit-background-size: auto 100%;
+	z-index: 500;
+	margin:0px;
 }
 
 joscroller.h-scroller {
-	position:static;
+	position:relative;
 	height:120px;
 	width:100%;
-	-webkit-box-shadow:3px 3px 5px #888 inset;
 	z-index:10;
-	margin-right:0px;	/* overriding joflexrow > * */
 }
 
 joscroller.h-scroller > * {
@@ -146,21 +171,38 @@ joscroller.player-details {
 	width:auto;
 }
 
+joscroller.player-details > jocontainer {
+	padding:10px 0px 20px 0px;
+}
+
 .player-details-label {
-	width:30px;
+	width:40px;
 	line-height:40px;
 	-webkit-box-flex:0;
-	-webkit-background-size:100% auto;
+	-webkit-background-size:auto 50px;
+	margin:0px 10px;
+	padding:2px;
+}
+
+sliderrow {
+	margin:3px 0px;
+	background:url("../images/bg.png");
+	z-index:500;
 }
 
 .player-details-value {
-	width:30px;
-	height:40px;
+	width:34px;
+	height:50px;
 	line-height:40px;
 	font-weight:bold;
 	font-size:larger;
 	text-align:center;
 	-webkit-box-flex:0;
+	font-size:16pt;
+	color:#f2ce0a;
+	background:url(../images/banner-small.png) no-repeat center center;
+	-webkit-background-size:100% auto;
+	margin:8px /* match zero right margin from joflexrow > * */
 }
 
 jocaption.player-level-label {
@@ -183,8 +225,73 @@ jocaption.modifier-label {
 	margin-top:10px;
 }
 
-jocaption.player-name-label { /* .player-details-label */
+jocaption.player-name-label {
 	background:url(../images/player.png) no-repeat center center;
+}
+
+jocaption.battle-banner {
+	height:100px;
+	width:70px;
+	background-position:center center;
+	background-repeat:no-repeat;
+	margin:0px 10px;
+	-webkit-box-flex:0;
+	line-height:80px;
+	font-size:20px;
+	color:#ffffff;
+	font-weight:bold;
+	text-align:center;
+	padding-right:4px;
+}
+
+jocaption.battle-banner.player {
+	background-image:url(../images/banner-you.png);
+}
+
+jocaption.battle-banner.monster {
+	background-image:url(../images/banner-monster.png);
+}
+
+jocaption.versus-text {
+	height:100px;
+	width:40px;
+	background-position:center center;
+	background-image:url(../images/versus.png);
+	background-repeat:no-repeat;
+	-webkit-box-flex:0;
+	margin:0px;
+}
+
+sliderrow jocaption.button {
+	width: 29px;
+	height: 36px;
+	background-repeat:no-repeat;
+	background-position:0px 0px;
+	margin:10px 5px 5px 5px;
+	padding:3px;
+	-webkit-box-flex:0;
+}
+
+sliderrow jocaption.button.selected {
+	background-position:0px -41px;
+	background-color:inherit;
+	-webkit-box-shadow:none;
+}
+
+sliderrow jocaption.button.plus {
+	background-image:url(../images/plus.png);
+}
+
+sliderrow jocaption.button.double.plus {
+	background-image:url(../images/doublePlus.png);
+}
+
+sliderrow jocaption.button.minus {
+	background-image:url(../images/minus.png);
+}
+
+sliderrow jocaption.button.double.minus {
+	background-image:url(../images/doubleMinus.png);
 }
 
 jostack > .next {
