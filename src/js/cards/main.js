@@ -16,6 +16,7 @@ Munchkin.Cards.main = function() {
 	var mockPlayer = new joRecord({});							// data
 	var scroller, players, addPlayer, selectedPlayer,			// controls
 		nameRow, nameField, levelSlider, gearSlider, playerDetails;
+	var photos = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 		
 	/** Methods **/
 	function updateName(value) {
@@ -73,7 +74,7 @@ Munchkin.Cards.main = function() {
 	function addNewPlayer() {
 		var p = Munchkin.App.getPlayers();
 		var data = p.getData();
-		var newPlayer = new joRecord({name:"New Player",level:1,gear:0,avatar:"images/avatar/" + (data.length+1) + ".jpg"});
+		var newPlayer = new joRecord({name:"New Player",level:1,gear:0,avatar:photos.shift()});
 		data.push(newPlayer)
 		p.setData(data);
 		
@@ -86,6 +87,8 @@ Munchkin.Cards.main = function() {
 		var selected = selectedPlayer.getRecord();
 		for(var i=0;i<data.length;i++) {
 			if(data[i] === selected) {
+				var avatar = data[i].getProperty("avatar")
+				if(avatar) photos.push(avatar);
 				data.splice(i, 1);
 			}
 		}

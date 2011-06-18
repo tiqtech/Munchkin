@@ -5,7 +5,7 @@ Munchkin.Controls.Avatar = function(player) {
 	this.player = player;
 	this.selectEvent = new joSubject(this);
 	
-	var style = (photo) ? {"backgroundImage":"url(" + photo + ")"} : {};
+	photo = photo || "shadow";
 	
 	/** UI **/
 	control = new joFlexcol([
@@ -16,7 +16,7 @@ Munchkin.Controls.Avatar = function(player) {
 				new joCaption(),
 				new joCaption(player.link("gear")).setClassName("player-gear")
 			]),
-		]).setClassName("player-photo").setStyle(style),
+		]).setClassName("player-photo").setStyle({"backgroundImage":"url('images/avatar/" + photo + ".jpg')"}),
 		new joCaption(player.link("name")).setClassName("player-name")
 	]);
 	
