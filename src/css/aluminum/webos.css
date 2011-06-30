@@ -44,6 +44,6 @@ jobackbutton {
 }
 
 josliderthumb, jobutton {
-	background-attachment:fixed;
 	background-position:top left;
+	background-attachment:fixed; /* rjd - webos bg image fix */
 }

@@ -25,9 +25,9 @@ Munchkin.App = (function() {
 	}
 	
 	function init() {
-		if (window.PalmSystem) {
-			window.PalmSystem.setWindowOrientation('free');
-		}
+//		if (window.PalmSystem) {
+//			window.PalmSystem.setWindowOrientation('free');
+//		}
 		
 		for(var cardName in Munchkin.Cards) {
 			joCache.set(cardName, Munchkin.Cards[cardName]);
@@ -43,7 +43,7 @@ Munchkin.App = (function() {
 		);
 		
 		nav.setStack(stack);
-		navigate("main");
+		navigate("start");
 	}
 	
 	function navigate(card, event, param) {

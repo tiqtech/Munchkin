@@ -47,7 +47,7 @@ Munchkin.Cards.battle = function(player) {
 				])
 			])
 		])
-	]).setTitle("Battle");
+	]).setClassName("card-battle").setTitle("Battle");
 	
 	setupScroller(player);
 	

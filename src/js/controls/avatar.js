@@ -1,16 +1,19 @@
 Munchkin.Controls.Avatar = function(player) {
 	/** Variables **/
-	var control, button, photo = player.getProperty("avatar");
+	var control, button, remove, photo = player.getProperty("avatar");
 	
 	this.player = player;
 	this.selectEvent = new joSubject(this);
+	this.removeEvent = new joSubject(this);
 	
 	photo = photo || "shadow";
 	
 	/** UI **/
 	control = new joFlexcol([
 		new joContainer([
-			new joCaption().setClassName("player-photo-spacer"),
+			new joContainer([
+				remove = new joControl().setClassName("remove-button")
+			]).setClassName("player-photo-spacer"),
 			new joFlexrow([
 				new joCaption(player.link("level")).setClassName("player-level"),
 				new joCaption(),
@@ -23,6 +26,10 @@ Munchkin.Controls.Avatar = function(player) {
 	/** Event Handlers **/
 	joEvent.on(control, "click", function() {
 		this.selectEvent.fire(player);
+	}, this);
+	
+	remove.selectEvent.subscribe(function() {
+		this.removeEvent.fire(player);
 	}, this);
 	
 	joContainer.call(this, control, player);

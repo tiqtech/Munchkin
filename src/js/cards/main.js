@@ -53,6 +53,7 @@ Munchkin.Cards.main = function() {
 		for(var i=0;i<p.length;i++) {
 			var n = new Munchkin.Controls.Avatar(p[i]).setStyle(dimensions);
 			n.selectEvent.subscribe(selectPlayer, this);
+			n.removeEvent.subscribe(removePlayer, this);
 			players.push(n);
 			
 			if(p[i] === selection) {
@@ -81,10 +82,9 @@ Munchkin.Cards.main = function() {
 		setupScroller(newPlayer);
 	}
 	
-	function removePlayer() {
+	function removePlayer(selected) {
 		var p = Munchkin.App.getPlayers();
 		var data = p.getData();
-		var selected = selectedPlayer.getRecord();
 		for(var i=0;i<data.length;i++) {
 			if(data[i] === selected) {
 				var avatar = data[i].getProperty("avatar")
@@ -120,20 +120,25 @@ Munchkin.Cards.main = function() {
 					]).setClassName("player-name-row"),
 					levelSlider = new Munchkin.Controls.SliderRow("player-level-label", mockPlayer, "level",1,Munchkin.App.getPreferences().getProperty("maxLevel")),
 					gearSlider = new Munchkin.Controls.SliderRow("player-strength-label", mockPlayer, "gear",0,25),
-					battle = new joButton("Battle"),
-					removeButton = new joButton("Remove")
+					battle = new joButton("Battle")
 				]),
 				new joFade().setPosition("top"),
 				new joFade().setPosition("bottom")
 			]).setClassName("player-details").setStyle({"visibility":"hidden"})
 		])
-	]).setTitle("Munchkin!");
+	]).setTitle("Munchkin Score!");
 	
-	setupScroller();
+	card.activate = function(){
+		var p = Munchkin.App.getPlayers();
+		var data = p.getData();
+		if (data.length === 0) {
+			setupScroller();
+			playerDetails.setStyle({"visibility":"hidden"});
+		}
+	}
 	
 	/** Event Handlers **/
 	battle.selectEvent.subscribe(startBattle);
-	removeButton.selectEvent.subscribe(removePlayer);
 	
 	return card;
 };
